@@ -50,6 +50,21 @@ class ATask                         /* Size = 4 bytes*/
 
     public: virtual bool Execute() = 0;
 
+    public: void Link(ATask& task)
+    {
+        task._pNextTask == _pNextTask;
+        _pNextTask = &task;
+    };
+
+    protected: void Unlink(ATask& task)
+    {
+        if (_pNextTask == &task)
+        {
+            _pNextTask = task._pNextTask;
+            //task._pNextTask == nullptr;
+        }
+    }
+
     private: ATask* _pNextTask;
 };
 
@@ -64,8 +79,10 @@ class Task : public ATask           /* Size = sizeof(ATASK) + 2 = 4 + 2 = 6 byte
 };
 
 
-class TaskScheduler                 /* Size = 2 bytes*/
+class TaskScheduler                 /* Size = 4 bytes*/
 {
+    DECLARE_CLASSNAME;
+
     public: TaskScheduler() : _pFirstTask(nullptr) { };
 
     /***************************************************************************
@@ -108,11 +125,12 @@ class TaskScheduler                 /* Size = 2 bytes*/
 };
 
 
-inline void TaskScheduler::LinkTask(ATask* pTask, ATask* pNewTask)
-{
-    pNewTask->_pNextTask = pTask->_pNextTask;
-    pTask->_pNextTask = pNewTask;
-}
+//inline void TaskScheduler::LinkTask(ATask* pTask, ATask* pNewTask)
+//{
+//    pTask->Link(*pNewTask);
+//    //pNewTask->_pNextTask = pTask->_pNextTask;
+//    //pTask->_pNextTask = pNewTask;
+//}
 
 
 inline void TaskScheduler::LinkFirstTask(ATask* pNewTask)
@@ -122,9 +140,9 @@ inline void TaskScheduler::LinkFirstTask(ATask* pNewTask)
 }
 
 
-inline void TaskScheduler::LinkLastTask(ATask* pNewTask)
-{
-    LinkTask(LastTask(), pNewTask);
-}
+//inline void TaskScheduler::LinkLastTask(ATask* pNewTask)
+//{
+//    LastTask()->Link(*pNewTask);
+//}
 
 #endif

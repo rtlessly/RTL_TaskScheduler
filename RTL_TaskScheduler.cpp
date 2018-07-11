@@ -9,13 +9,16 @@ Implementation file for the TaskScheduler class.
 #include "RTL_TaskScheduler.h"
 
 
+DEFINE_CLASSNAME(TaskScheduler);
+
+
 void TaskScheduler::Dispatch()
 {
     for (auto pTask = _pFirstTask; pTask; pTask = pTask->_pNextTask)
     {
         // The watchdog timer (wdt) will restart the Arduino unless it is periodically reset
         wdt_reset();
-        TRACE(Logger() << F("Scheduler.Dispatch: Task=") << PTR(pTask) << endl);
+        TRACE(Logger(_classname_, F("Dispatch")) << F("Task=") << ToHex(pTask) << endl);
 
         if (pTask->Execute()) break;
     }
@@ -32,7 +35,7 @@ void TaskScheduler::Add(ATask& task)
     }
     else
     {
-        LinkLastTask(&task);
+        LastTask()->Link(task);
     }
 
     TRACE(DumpQueue(F("Add:After")));
@@ -55,7 +58,7 @@ void TaskScheduler::InsertAt(ATask& task, uint16_t priority)
         {
             if (i++ == priority)
             {
-                LinkTask(p, &task);
+                p->Link(task);
                 break;
             }
         }
@@ -79,7 +82,7 @@ void TaskScheduler::InsertBefore(ATask& task, ATask& beforeTask)
     {
         if (auto prevTask = FindPrev(&beforeTask))
         {
-            LinkTask(prevTask, &task);
+            prevTask->Link(task);
         }
     }
     
@@ -91,10 +94,7 @@ void TaskScheduler::InsertAfter(ATask& task, ATask& afterTask)
 {
     TRACE(DumpQueue(F("InsertAfter:Before")));
 
-    if (auto pTask = Find(&afterTask))
-    {
-        LinkTask(pTask, &task);
-    }
+    afterTask.Link(task);
     
     TRACE(DumpQueue(F("InsertAfter:After")));
 }
@@ -109,19 +109,17 @@ void TaskScheduler::Remove(ATask& task)
     if (_pFirstTask == &task)
     {
         _pFirstTask = _pFirstTask->_pNextTask;
-        TRACE(Logger() << F("Remove: Removed first task ") << PTR(&task) << endl);
+        TRACE(Logger(_classname_, F("Remove")) << F("Removed first task ") << ToHex(&task) << endl);
     }
     else
     {
-        auto prevTask = FindPrev(&task);
-
-        if (prevTask)
+        if (auto prevTask = FindPrev(&task))
         {
-            prevTask->_pNextTask = task._pNextTask;
-            TRACE(Logger() << F("Remove: Removed task ") << PTR(&task) << F(" after task ") << PTR(prevTask) << endl);
+            prevTask->Unlink(task);
+            TRACE(Logger(_classname_, F("Remove")) << F("Removed task ") << ToHex(&task) << endl);
         }
         else
-            TRACE(Logger() << F("Remove: task ") << PTR(&task) << F(" not found") << endl);
+            TRACE(Logger(_classname_, F("Remove")) << F("task not found: ") << ToHex(&task) << endl);
     }
 
     TRACE(DumpQueue(F("Remove:After")));
@@ -157,13 +155,13 @@ ATask* TaskScheduler::FindPrev(Task* pTask)
 
 void TaskScheduler::DumpQueue(const __FlashStringHelper* message)
 {
-    int i = 1;
+    auto i = 1;
 
-    Logger() << F("TaskScheduler:  ") << message << endl;
+    Logger(_classname_) << F("Task Queue - ") << message << endl;
 
     for (auto p = _pFirstTask; p; p = p->_pNextTask)
     {
-        Logger() << i++ << F(".    ") << PTR(p) << endl;
+        Logger(_classname_) << i++ << F(".    ") << ToHex(p) << endl;
     }
 }
 
