@@ -27,6 +27,7 @@ void TaskScheduler::Dispatch()
 
 void TaskScheduler::Add(ATask& task)
 {
+    TRACE(Logger(_classname_, F("Add")) << ToHex(&task) << endl);
     TRACE(DumpQueue(F("Add:Before")));
 
     if (_pFirstTask == nullptr)
@@ -44,6 +45,7 @@ void TaskScheduler::Add(ATask& task)
 
 void TaskScheduler::InsertAt(ATask& task, uint16_t priority)
 {
+    TRACE(Logger(_classname_, F("InsertAt")) << priority << ',' << ToHex(&task) << endl);
     TRACE(DumpQueue(F("InsertAt:Before")));
 
     if (priority <= 1)
@@ -70,6 +72,7 @@ void TaskScheduler::InsertAt(ATask& task, uint16_t priority)
 
 void TaskScheduler::InsertBefore(ATask& task, ATask& beforeTask)
 {
+    TRACE(Logger(_classname_, F("InsertBefore")) << ToHex(&beforeTask) << ',' << ToHex(&task) << endl);
     TRACE(DumpQueue(F("InsertBefore:Before")));
 
     if (_pFirstTask == nullptr) return;
@@ -92,9 +95,12 @@ void TaskScheduler::InsertBefore(ATask& task, ATask& beforeTask)
 
 void TaskScheduler::InsertAfter(ATask& task, ATask& afterTask)
 {
+    TRACE(Logger(_classname_, F("InsertAfter")) << ToHex(&afterTask) << ',' << ToHex(&task) << endl);
     TRACE(DumpQueue(F("InsertAfter:Before")));
 
-    afterTask.Link(task);
+    task._pNextTask = afterTask._pNextTask;
+    afterTask._pNextTask = &task;
+    //afterTask.Link(task);
     
     TRACE(DumpQueue(F("InsertAfter:After")));
 }
@@ -104,6 +110,7 @@ void TaskScheduler::Remove(ATask& task)
 {
     if (_pFirstTask == nullptr) return;
 
+    TRACE(Logger(_classname_, F("Remove")) << ToHex(&task) << endl);
     TRACE(DumpQueue(F("Remove:Before")));
 
     if (_pFirstTask == &task)
