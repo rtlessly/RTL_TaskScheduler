@@ -10,37 +10,20 @@ typedef bool (*TaskFunc)(void);     /* Size = 2 bytes*/
 
 
 //******************************************************************************
-/// The TaskScheduler class maintains a queue of tasks to execute and implements 
-/// a simple dispatch loop to execute those tasks. A task wraps a function that
-/// takes no arguments and returns a boolean value. 
+/// The abstact base class for a simple task. A task wraps a function that takes
+/// no arguments and returns a boolean value. 
 ///
-/// If a task returns true it signals the scheduler to restart its task execution
+/// If a task returns true it signals the TaskScheduler to restart its task execution
 /// loop, whereas returning false signals the scheduler to continue on to the next
 /// task in the queue.
 ///
-/// This simple mechanism permits the prioritized execution of tasks, where tasks
-/// higher in the queue can preempt later tasks by returning true. However, it
-/// also expects each task to "play nice" so that no task hogs the CPU by returning
-/// true all the time and preventing any other task from executing.
-///
-/// Task should be designed so that they execute a small "unit of work" on each
-/// iteration.
-///
-/// This simple design works well for controllers that need to monitor multiple
-/// sensors and processes that execute in response to those sensors. For example,
-/// a task may check the value of a sensor. If the sensor has triggered it initiates
-/// some process and return true. Otherwise, the task just returns false. Note
-/// that the initiated process itself may be another task.
-///
-/// Internally, the task queue is implemented as a singly-linked list. The ATask
-/// class provides a pointer to the next task in the queue, while the TaskScheduler
-/// maintains a pointer to the first task in the queue. The last task has its next
-/// task pointer set to NULL. The TaskScheduler has methods to link and unlink
-/// tasks in the queue. This mechansim avoids the need to use a pre-allocated
-/// fixed-sized queue, or to use new to dynamically allocate queue entries - both
-/// of which are frowned upon in an Arduino environment (pre-allocation can waste
-/// precious RAM memory by allocating a queue that is larger than what is actually
-/// used, while new carries a lot of overhead and also is less memory efficient).
+/// The ATask class defines a abstact Execute() method that must be implemented 
+/// in a derived class. This method contains the actual functionality of the task. 
+/// The Execute() method is called by the TaskScheduler on each iteration through 
+/// its task queue. As such, the Execute() method should be designed so that it 
+/// executes only a small unit of work on each iteration. In addition, it should
+/// be designed to "fail fast" so that task exits as quickly as possible (and 
+/// returns false) if it has no work to do.
 //******************************************************************************
 class ATask                         /* Size = 4 bytes*/
 {
@@ -53,7 +36,7 @@ class ATask                         /* Size = 4 bytes*/
     public: virtual bool Execute() = 0;
 
     //**************************************************************************
-    /// Inserts a new task after this task in the linked list.
+    /// Links a new task after this task.
     //**************************************************************************
     public: void Link(ATask& task)
     {
@@ -62,19 +45,17 @@ class ATask                         /* Size = 4 bytes*/
     };
 
     //**************************************************************************
-    /// Removes a task from the linked list of tasks if it is the next task linked
-    /// to this task.
+    /// Unlinks a task if it is linked to this task.
     //**************************************************************************
     protected: void Unlink(ATask& task)
     {
         if (_pNextTask == &task)
         {
             _pNextTask = task._pNextTask;
-            //task._pNextTask == nullptr;
         }
     }
 
-    /// The pointer to the next task in the linked list. 
+    /// The pointer to the next task in the queue. 
     private: ATask* _pNextTask;
 };
 
@@ -101,7 +82,33 @@ class Task : public ATask           /* Size = sizeof(ATASK) + 2 = 4 + 2 = 6 byte
 
 
 //******************************************************************************
-/// Schedules the execution of tasks and manages the linked list of tasks.
+/// The TaskScheduler class maintains a queue of tasks to execute and implements 
+/// a simple dispatch loop to execute those tasks.  
+///
+/// If a task returns true it signals the scheduler to restart its task execution
+/// loop, whereas returning false signals the scheduler to continue on to the next
+/// task in the queue.
+///
+/// This simple mechanism permits the prioritized execution of tasks, where tasks
+/// higher in the queue can preempt later tasks by returning true. However, it
+/// also expects each task to "play nice" so that no task hogs the CPU by returning
+/// true all the time and preventing any other task from executing.
+///
+/// This design works well for controllers that need to monitor multiple sensors 
+/// and processes that execute in response to those sensors. For example, a task
+/// may check the value of a sensor. If the sensor has triggered it initiates some
+/// process and return true. Otherwise, the task just returns false. Note that the
+/// initiated process itself may be another task.
+///
+/// Internally, the task queue is implemented as a singly-linked list. The ATask
+/// class provides a pointer to the next task in the queue, while the TaskScheduler
+/// maintains a pointer to the first task in the queue. The last task has its next
+/// task pointer set to NULL. The TaskScheduler has methods to link and unlink
+/// tasks in the queue. This mechansim avoids the need to use a pre-allocated
+/// fixed-sized queue, or to use new to dynamically allocate queue entries - both
+/// of which are frowned upon in an Arduino environment (pre-allocation can waste
+/// precious RAM memory by allocating a queue that is larger than what is actually
+/// used, while new carries a lot of overhead and also is less memory efficient).
 //******************************************************************************
 class TaskScheduler                 /* Size = 4 bytes*/
 {
@@ -184,14 +191,6 @@ class TaskScheduler                 /* Size = 4 bytes*/
 };
 
 
-//inline void TaskScheduler::LinkTask(ATask* pTask, ATask* pNewTask)
-//{
-//    pTask->Link(*pNewTask);
-//    //pNewTask->_pNextTask = pTask->_pNextTask;
-//    //pTask->_pNextTask = pNewTask;
-//}
-
-
 //******************************************************************************
 /// Links a task  as the first task in the queue.
 //******************************************************************************
@@ -200,11 +199,5 @@ inline void TaskScheduler::LinkFirstTask(ATask* pNewTask)
     pNewTask->_pNextTask = _pFirstTask;
     _pFirstTask = pNewTask;
 }
-
-
-//inline void TaskScheduler::LinkLastTask(ATask* pNewTask)
-//{
-//    LastTask()->Link(*pNewTask);
-//}
 
 #endif
