@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{d67a52a9-1adc-45ba-9e93-624fbeda8312}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)EventQueue.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EventSource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)RTL_TaskManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TaskBase.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Event.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventBinding.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventCodes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventQueue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventSource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IEventListener.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RTL_TaskManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StateBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)TaskBase.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)keywords.txt" />
+    <Text Include="$(MSBuildThisFileDirectory)library.properties" />
+    <Text Include="$(MSBuildThisFileDirectory)readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory).gitattributes" />
+    <None Include="$(MSBuildThisFileDirectory).gitignore" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+    <None Include="$(MSBuildThisFileDirectory)RTL_TaskScheduler.vcxitems" />
+    <None Include="$(MSBuildThisFileDirectory)RTL_TaskScheduler.vcxitems.filters" />
+    <None Include="$(MSBuildThisFileDirectory)RTL_TaskScheduler.vcxitems.user" />
+  </ItemGroup>
+</Project>

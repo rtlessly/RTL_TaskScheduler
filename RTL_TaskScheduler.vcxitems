@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{b89c38fb-7ac0-4b1c-83b7-30c1eb932a8f}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)readme.txt" />
+    <Text Include="$(MSBuildThisFileDirectory)library.properties" />
+    <Text Include="$(MSBuildThisFileDirectory)RTL_TaskScheduler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- <ClInclude Include="$(MSBuildThisFileDirectory)RTL_TaskScheduler.h" /> -->
+    <ClInclude Include="$(MSBuildThisFileDirectory)ATask.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Event.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventBinding.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventCodes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventQueue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EventSource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IEventListener.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StateTask.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ATask.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EventQueue.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EventSource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)RTL_TaskScheduler.cpp" />
+  </ItemGroup>
+</Project>
