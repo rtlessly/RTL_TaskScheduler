@@ -20,8 +20,6 @@ the next go-around.
 
 DEFINE_CLASSNAME(EventQueue);
 
-//EventQueue EventQueue::SoleInstance;
-
 Event   EventQueue::_queue[QUEUE_SIZE];
 uint8_t EventQueue::_queueHead = 0;
 uint8_t EventQueue::_queueTail = 0;
